@@ -12,7 +12,7 @@ const noteService = {
       });
   },
   delete(db, id){
-    return db('bookmarks')
+    return db('notes')
       .where({ id })
       .delete();
   }

@@ -1,9 +1,9 @@
 const path = require('path')
 const express = require('express')
 const xss = require('xss')
-const NotesService = require('./notes-service')
+const noteService = require('./Notes/NoteServices')
 
-const notesRouter = express.Router()
+const noteRouter = express.Router()
 const jsonParser = express.json()
 
 const serializeNote = note => ({
@@ -14,10 +14,10 @@ const serializeNote = note => ({
   content: xss(note.content)
 })
 
-notesRouter
+noteRouter
   .route('/')
   .get((req, res, next) => {
-    NotesService.getAllnotes(req.app.get('db'))
+    noteService.getAllnotes(req.app.get('db'))
       .then(notes => {
         res.json(notes.map(serializeNote))
       })
@@ -40,7 +40,7 @@ notesRouter
     }
     newNote.modified = modified
 
-    NotesService.insertNote(
+    noteService.insertNote(
       req.app.get('db'),
       newNote
     )
@@ -53,10 +53,10 @@ notesRouter
       .catch(next)
   })
 
-notesRouter
+noteRouter
   .route('/:note_id')
   .all((req, res, next) => {
-    NotesService.getById(
+    noteService.getById(
       req.app.get('db'),
       req.params.note_id
     )
@@ -75,7 +75,7 @@ notesRouter
     res.json(serializeNote(res.note))
   })
   .delete((req, res, next) => {
-    NotesService.deleteNote(
+    noteService.deleteNote(
       req.app.get('db'),
       req.params.note_id
     )
@@ -96,7 +96,7 @@ notesRouter
         }
       })
     }
-    NotesService.updateNote(
+    noteService.updateNote(
       req.app.get('db'),
       req.params.note_id,
       noteToUpdate
@@ -107,4 +107,4 @@ notesRouter
       .catch(next)
   })
 
-module.exports = notesRouter
+module.exports = noteRouter
